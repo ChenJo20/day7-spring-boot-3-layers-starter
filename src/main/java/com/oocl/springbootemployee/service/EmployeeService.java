@@ -9,6 +9,7 @@ import java.util.List;
 @Service
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
+
     public EmployeeService(IEmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
@@ -18,10 +19,16 @@ public class EmployeeService {
     }
 
     public Employee creat(Employee employee) {
+        if (employee.getAge() < 18 || employee.getAge() > 65) {
+            throw new EmployeeAgeNotValidException();
+        }
+        if (employee.getAge() >= 30 && employee.getSalary() <= 20000) {
+            throw new EmployeeAgeSalaryNotMatchException();
+        }
         return employeeRepository.addEmployee(employee);
     }
 
-    public Employee update(Integer employeeId, Employee employee){
+    public Employee update(Integer employeeId, Employee employee) {
         Employee employeeExisted = employeeRepository.getEmployeeById(employeeId);
 
         var nameToUpdate = employee.getName() == null ? employeeExisted.getName() : employee.getName();
