@@ -30,7 +30,9 @@ public class EmployeeService {
 
     public Employee update(Integer employeeId, Employee employee) {
         Employee employeeExisted = employeeRepository.getEmployeeById(employeeId);
-
+        if (!employeeExisted.getActive()) {
+            throw new NotActiveEmployeeException();
+        }
         var nameToUpdate = employee.getName() == null ? employeeExisted.getName() : employee.getName();
         var ageToUpdate = employee.getAge() == null ? employeeExisted.getAge() : employee.getAge();
         var genderToUpdate = employee.getGender() == null ? employeeExisted.getGender() : employee.getGender();
