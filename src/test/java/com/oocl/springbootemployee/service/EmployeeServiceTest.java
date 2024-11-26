@@ -2,16 +2,15 @@ package com.oocl.springbootemployee.service;
 
 import com.oocl.springbootemployee.model.Employee;
 import com.oocl.springbootemployee.model.Gender;
-import com.oocl.springbootemployee.repository.EmployeeRepository;
 import com.oocl.springbootemployee.repository.IEmployeeRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class EmployeeServiceTest {
     @Test
@@ -42,5 +41,44 @@ class EmployeeServiceTest {
 
         //then
         assertEquals("Lucy", createdEmployee.getName());
+    }
+
+    @Test
+    void should_throw_EmployeeAgeNotValidException_when_create_given_a_employee_aged_17() {
+        //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
+        Employee johnson = new Employee(2, "Johnson", 17, Gender.MALE, 8000.0);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
+
+        //when
+        //then
+        assertThrows(EmployeeAgeNotValidException.class, () -> employeeService.creat(johnson));
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
+    }
+
+    @Test
+    void should_throw_EmployeeAgeNotValidException_when_create_given_a_employee_aged_66() {
+        //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
+        Employee johnson = new Employee(2, "Johnson", 66, Gender.MALE, 8000.0);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
+
+        //when
+        //then
+        assertThrows(EmployeeAgeNotValidException.class, () -> employeeService.creat(johnson));
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
+    }
+
+    @Test
+    void should_throw_EmployeeAgeSalaryNotMatchException_when_create_given_a_employee_aged_33_salary_250() {
+        //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
+        Employee johnson = new Employee(2, "Johnson", 30, Gender.MALE, 250.0);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
+
+        //when
+        //then
+        assertThrows(EmployeeAgeSalaryNotMatchException.class, () -> employeeService.creat(johnson));
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
     }
 }
