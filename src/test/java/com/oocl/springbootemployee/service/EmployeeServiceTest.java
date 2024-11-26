@@ -81,4 +81,34 @@ class EmployeeServiceTest {
         assertThrows(EmployeeAgeSalaryNotMatchException.class, () -> employeeService.creat(johnson));
         verify(mockedEmployeeRepository, never()).addEmployee(any());
     }
+
+    @Test
+    void should_active_status_equals_true_when_create_given_a_employee() {
+        //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
+        Employee johnson = new Employee(7, "Johnson", 25, Gender.MALE, 250.0);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
+
+        //when
+        employeeService.creat(johnson);
+        //then
+        verify(mockedEmployeeRepository).addEmployee(argThat(Employee::getActive));
+    }
+
+    @Test
+    void should_throw_NotActiveEmployeeException_when_update_given_an_inactive_employee() {
+        //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
+        Employee johnson = new Employee(7, "Johnson", 25, Gender.MALE, 250.0);
+        johnson.setActive(false);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
+        when(mockedEmployeeRepository.getEmployeeById(7)).thenReturn(johnson);
+
+        //when
+        assertThrows(NotActiveEmployeeException.class, () -> employeeService.update(7, johnson));
+        //then
+        verify(mockedEmployeeRepository, never()).updateEmployee(any(), any());
+    }
+
+
 }
